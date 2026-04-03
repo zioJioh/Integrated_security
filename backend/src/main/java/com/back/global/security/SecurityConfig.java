@@ -1,6 +1,7 @@
 package com.back.global.security;
 
-import lombok.RequiredArgsConstructor;
+import java.util.List;
+
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -12,7 +13,7 @@ import org.springframework.security.web.header.writers.frameoptions.XFrameOption
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
-import java.util.List;
+import lombok.RequiredArgsConstructor;
 
 @Configuration
 @EnableWebSecurity
@@ -43,7 +44,7 @@ public class SecurityConfig {
                         exceptionHandling -> exceptionHandling
                                 .authenticationEntryPoint((request, response, authenticationException) -> {
 
-                                    response.setContentType("application/json");
+                                    response.setContentType("application/json; charset=UTF-8");
                                     response.setStatus(401);
                                     response.getWriter().write(
                                             """
@@ -54,7 +55,7 @@ public class SecurityConfig {
                                                     """);
                                 })
                                 .accessDeniedHandler((request, response, accessDeniedException) -> {
-                                            response.setContentType("application/json");
+                                            response.setContentType("application/json; charset=UTF-8");
                                             response.setStatus(403);
                                             response.getWriter().write(
                                                     """
