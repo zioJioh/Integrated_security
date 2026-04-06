@@ -25,6 +25,7 @@ export default function ClientLayouts({ children }: { children: React.ReactNode 
             })
                 .then((data) => {
                     alert(data.msg);
+                    setLoginMember(null);
                 })
                 .catch((rsData) => {
                     alert(rsData.msg);
