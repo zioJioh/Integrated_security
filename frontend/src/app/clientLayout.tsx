@@ -1,8 +1,22 @@
 "use client";
 import { fetchApi } from "@/lib/client";
 import Link from "next/link";
+import { useEffect, useState } from "react";
 
 export default function ClientLayouts({ children }: { children: React.ReactNode }) {
+
+    const [loginMember, setLoginMember] = useState<MemberDto | null>(null);
+    const isLogin = loginMember !== null;
+
+    useEffect(() => {
+        fetchApi("/api/v1/members/me")
+            .then((memberDto) => {
+                setLoginMember(memberDto);
+            })
+            .catch((err) => {
+                console.log("err", err);
+            });
+    }, []);
 
     const logout = () => {
         confirm("로그아웃 하시겠습니까?") &&
@@ -23,10 +37,9 @@ export default function ClientLayouts({ children }: { children: React.ReactNode 
             <nav className="flex gap-4">
                 <Link href="/">메인</Link>
                 <Link href="/posts">목록</Link>
-                <Link href="/member/login">로그인</Link>
-                <button className="hover:cursor-pointer"
-                    onClick={logout}
-                >로그아웃</button>
+                {!isLogin && <Link href="/member/login">로그인</Link>}
+                {isLogin && <button onClick={logout}>로그아웃</button>}
+                {isLogin && <Link href="#">{loginMember?.name}</Link>}
             </nav>
         </header >
         <main className="flex flex-col flex-grow gap-4 justify-center items-center">
