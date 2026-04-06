@@ -10,45 +10,35 @@ export default function Write() {
     const onSubmitHandler = (e: any) => {
         e.preventDefault();;
         const form = e.target;
-        const title = form.title;
-        const content = form.content;
+        const username = form.username;
+        const password = form.password;
 
-        if (title.value.length === 0) {
-            alert("제목을 입력해주세요.");
-            title.focus();
+        if (username.value.length === 0) {
+            alert("아이디를 입력해주세요.");
+            username.focus();
             return;
         }
 
-        if (title.value.length >= 10 || title.value.length < 2) {
-            alert("2글자 이상 10자 미만으로 작성해주세요");
-            title.focus();
-            return;
-        }
-
-        if (content.value.length === 0) {
-            alert("내용을 입력해주세요.");
-            content.focus();
-            return;
-        }
-
-        if (content.value.length >= 100 || content.value.length < 2) {
-            alert("2글자 이상 100자 미만으로 작성해주세요");
-            content.focus();
+        if (password.value.length === 0) {
+            alert("비밀번호를 입력해주세요.");
+            password.focus();
             return;
         }
 
         // db에 저장.
-        fetchApi(`/api/v1/posts`, {
+        fetchApi(`/api/v1/members/login`, {
             method: "POST",
             body: JSON.stringify({
-                "title": title.value,
-                "content": content.value
+                "username": username.value,
+                "password": password.value
             })
         })
             .then(rs => {
-                alert("글이 정상적으로 작성되었습니다.");
-                // 글 상세 페이지로 이동
-                router.replace(`/posts/${rs.data.postDto.id}`)
+                alert(rs.msg);
+                router.replace(`/`)
+            })
+            .catch((errMsg) => {
+                alert(errMsg);
             })
     }
 
@@ -57,9 +47,9 @@ export default function Write() {
             <h1>로그인</h1>
 
             <form action="" onSubmit={onSubmitHandler} className="flex flex-col gap-4">
-                <input type="text" name="title" className="border-1 rounded p-2" placeholder="아이디를 입력해주세요" />
-                <input type="password" name="title" className="border-1 rounded p-2" placeholder="비밀번호를 입력해주세요." />
-                <button className="bg-blue-500 text-white p-2 rounded" type="submit">
+                <input type="text" name="username" className="p-2 rounded border-1" placeholder="아이디를 입력해주세요" />
+                <input type="password" name="password" className="p-2 rounded border-1" placeholder="비밀번호를 입력해주세요." />
+                <button className="p-2 text-white bg-blue-500 rounded" type="submit">
                     로그인
                 </button>
             </form>
