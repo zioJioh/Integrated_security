@@ -1,18 +1,21 @@
 package com.back.global.rq;
 
-import com.back.domain.member.entity.Member;
-import com.back.domain.member.service.MemberService;
-import com.back.global.security.SecurityUser;
-import jakarta.servlet.http.Cookie;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
-import lombok.RequiredArgsConstructor;
+import java.util.Arrays;
+import java.util.Optional;
+
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 
-import java.util.Arrays;
-import java.util.Optional;
+import com.back.domain.member.entity.Member;
+import com.back.domain.member.service.MemberService;
+import com.back.global.exception.ServiceException;
+import com.back.global.security.SecurityUser;
+
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import lombok.RequiredArgsConstructor;
 
 @Component
 @RequiredArgsConstructor
@@ -25,10 +28,30 @@ public class Rq {
     // 인증된 사용자 정보 확보
     public Member getActor() {
 
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        SecurityUser securityUser = (SecurityUser) authentication.getPrincipal();
+        //        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        //
+        //        if(authentication == null) {
+        //            throw new ServiceException("401-1", "인증된 사용자가 없습니다.");
+        //        }
+        //
+        //        SecurityUser securityUser = (SecurityUser) authentication.getPrincipal();
+        //
+        //        return new Member(securityUser.getId(), securityUser.getUsername(), securityUser.getNickname());
 
-        return new Member(securityUser.getId(), securityUser.getUsername(), securityUser.getNickname());
+        return Optional.ofNullable(
+                SecurityContextHolder
+                    .getContext().
+                    getAuthentication()
+            )
+            .map(Authentication::getPrincipal)
+            .filter(principal -> principal instanceof SecurityUser)
+            .map(principal -> (SecurityUser) principal)
+            .map(securityUser -> new Member(
+                securityUser.getId(),
+                securityUser.getUsername(),
+                securityUser.getNickname()
+            ))
+            .orElseThrow(() -> new ServiceException("401-1", "로그인 후 이용해주세요."));
     }
 
     public void setHeader(String name, String value) {
